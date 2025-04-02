@@ -16,10 +16,10 @@ export type {
   Field as IField,
   Form as IForm,
   Errors,
-  Warnings
+  Warnings,
 } from './types';
 
 export { ValidateTrigger } from './types';
-export { createForm } from './core/create-form';
+export { createForm, type CreateFormOptions } from './core/create-form';
 export { Glob } from './utils';
 export * from './core';

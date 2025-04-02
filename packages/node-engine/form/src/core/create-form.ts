@@ -11,7 +11,7 @@ import { FieldArrayModel } from './field-array-model';
 //   parentContainer?: interfaces.Container;
 // }
 
-type CreateFormOptions = FormOptions & {
+export type CreateFormOptions<T = any> = FormOptions<T> & {
   /**
    * 为 true 时，createForm 不会对form 初始化， 用户需要手动调用 control.init()
    * 该配置主要为了解决，用户需要去监听一些form 的初始化事件，那么他需要再配置完监听后再初始化。
@@ -20,7 +20,9 @@ type CreateFormOptions = FormOptions & {
   disableAutoInit?: boolean;
 };
 
-export function createForm<TValues>(options?: CreateFormOptions): CreateFormReturn<TValues> {
+export function createForm<TValues>(
+  options?: CreateFormOptions<TValues>
+): CreateFormReturn<TValues> {
   const { disableAutoInit = false, ...formOptions } = options || {};
   const formModel = new FormModel();
 

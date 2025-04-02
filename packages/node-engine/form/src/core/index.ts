@@ -1,5 +1,5 @@
 export { FormModel } from './form-model';
-export { createForm } from './create-form';
+export { createForm, type CreateFormOptions } from './create-form';
 export { FieldModel } from './field-model';
 export { FieldArrayModel } from './field-array-model';
 
