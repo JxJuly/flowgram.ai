@@ -465,15 +465,18 @@ export class WorkflowDocument extends FlowDocument {
         to: line.to!.id,
       }));
 
-    const startNodeId = allNode.find((node) => node.isStart)!.id;
-    const endNodeId = allNode.find((node) => node.isNodeEnd)!.id;
+    const startNodeId = allNode.find((node) => node.isStart)?.id;
+    const endNodeId = allNode.find((node) => node.isNodeEnd)?.id;
 
     // 子画布内节点无需开始/结束
     const nodeInContainer = allNode
       .filter((node) => node.parent?.getNodeMeta<WorkflowNodeMeta>().isContainer)
       .map((node) => node.id);
 
-    const associatedCache = new Set([endNodeId, ...nodeInContainer]);
+    const associatedCache = new Set(nodeInContainer);
+    if (endNodeId) {
+      associatedCache.add(endNodeId);
+    }
     const bfs = (nodeId: string) => {
       if (associatedCache.has(nodeId)) {
         return;
@@ -489,7 +492,9 @@ export class WorkflowDocument extends FlowDocument {
       nextNodes.forEach(bfs);
     };
 
-    bfs(startNodeId);
+    if (startNodeId) {
+      bfs(startNodeId);
+    }
 
     const associatedNodes = allNode.filter((node) => associatedCache.has(node.id));
 
