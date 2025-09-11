@@ -5,19 +5,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+import { usePanelManager } from '@flowgram.ai/panel-manager-plugin';
 import { useClientContext, getNodeForm, FlowNodeEntity } from '@flowgram.ai/free-layout-editor';
 import { Button, Badge } from '@douyinfe/semi-ui';
 import { IconPlay } from '@douyinfe/semi-icons';
 
-import { TestRunSidePanel } from '../testrun-panel';
+import { testRunPanelFactory } from '../testrun-panel/test-run-panel';
 
 import styles from './index.module.less';
 
 export function TestRunButton(props: { disabled: boolean }) {
   const [errorCount, setErrorCount] = useState(0);
   const clientContext = useClientContext();
-  const [visible, setVisible] = useState(false);
-
+  const panelManager = usePanelManager();
   const updateValidateData = useCallback(() => {
     const allForms = clientContext.document.getAllNodes().map((node) => getNodeForm(node));
     const count = allForms.filter((form) => form?.state.invalid).length;
@@ -31,7 +31,7 @@ export function TestRunButton(props: { disabled: boolean }) {
     const allForms = clientContext.document.getAllNodes().map((node) => getNodeForm(node));
     await Promise.all(allForms.map(async (form) => form?.validate()));
     console.log('>>>>> save data: ', clientContext.document.toJSON());
-    setVisible(true);
+    panelManager.open(testRunPanelFactory.key, 'right');
   }, [clientContext]);
 
   /**
@@ -76,10 +76,5 @@ export function TestRunButton(props: { disabled: boolean }) {
       </Badge>
     );
 
-  return (
-    <>
-      {button}
-      <TestRunSidePanel visible={visible} onCancel={() => setVisible(false)} />
-    </>
-  );
+  return button;
 }

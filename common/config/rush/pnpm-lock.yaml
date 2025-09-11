@@ -120,6 +120,9 @@ importers:
       '@flowgram.ai/minimap-plugin':
         specifier: workspace:*
         version: link:../../packages/plugins/minimap-plugin
+      '@flowgram.ai/panel-manager-plugin':
+        specifier: workspace:*
+        version: link:../../packages/plugins/panel-manager-plugin
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -269,6 +272,9 @@ importers:
       '@flowgram.ai/minimap-plugin':
         specifier: workspace:*
         version: link:../../packages/plugins/minimap-plugin
+      '@flowgram.ai/panel-manager-plugin':
+        specifier: workspace:*
+        version: link:../../packages/plugins/panel-manager-plugin
       '@flowgram.ai/runtime-interface':
         specifier: workspace:*
         version: link:../../packages/runtime/interface
@@ -3878,6 +3884,37 @@ importers:
       vitest:
         specifier: ^0.34.6
         version: 0.34.6(jsdom@26.1.0)
+
+  ../../packages/plugins/panel-manager-plugin:
+    dependencies:
+      '@flowgram.ai/core':
+        specifier: workspace:*
+        version: link:../../canvas-engine/core
+      '@flowgram.ai/utils':
+        specifier: workspace:*
+        version: link:../../common/utils
+      inversify:
+        specifier: ^6.0.1
+        version: 6.2.0(reflect-metadata@0.2.2)
+    devDependencies:
+      '@flowgram.ai/eslint-config':
+        specifier: workspace:*
+        version: link:../../../config/eslint-config
+      '@flowgram.ai/ts-config':
+        specifier: workspace:*
+        version: link:../../../config/ts-config
+      '@types/react':
+        specifier: ^18
+        version: 18.3.16
+      react:
+        specifier: ^18
+        version: 18.3.1
+      tsup:
+        specifier: ^8.0.1
+        version: 8.3.5(typescript@5.8.3)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
 
   ../../packages/plugins/redux-devtool-plugin:
     dependencies:
@@ -18192,6 +18229,7 @@ packages:
   /source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
     dependencies:
       whatwg-url: 7.1.0
     dev: true

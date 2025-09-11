@@ -38,6 +38,7 @@
     "@flowgram.ai/form-materials": "workspace:*",
     "@flowgram.ai/group-plugin": "workspace:*",
     "@flowgram.ai/minimap-plugin": "workspace:*",
+    "@flowgram.ai/panel-manager-plugin": "workspace:*",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.9",
     "react": "^18",

@@ -3,4 +3,4 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { nodeFormPanelFactory } from './sidebar-renderer';
+export { PanelLayer } from './panel-layer';

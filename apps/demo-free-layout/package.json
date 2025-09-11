@@ -43,6 +43,7 @@
     "@flowgram.ai/free-container-plugin": "workspace:*",
     "@flowgram.ai/free-group-plugin": "workspace:*",
     "@flowgram.ai/form-materials": "workspace:*",
+    "@flowgram.ai/panel-manager-plugin": "workspace:*",
     "@flowgram.ai/runtime-js": "workspace:*",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.9",

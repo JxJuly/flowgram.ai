@@ -6,6 +6,7 @@
 import { useMemo } from 'react';
 
 import { debounce } from 'lodash-es';
+import { createPanelManagerPlugin } from '@flowgram.ai/panel-manager-plugin';
 import { createMinimapPlugin } from '@flowgram.ai/minimap-plugin';
 import { createGroupPlugin } from '@flowgram.ai/group-plugin';
 import { defaultFixedSemiMaterials } from '@flowgram.ai/fixed-semi-materials';
@@ -23,6 +24,7 @@ import { shortcutGetter } from '../shortcuts';
 import { CustomService } from '../services';
 import { GroupBoxHeader, GroupNode } from '../plugins/group-plugin';
 import { createClipboardPlugin, createVariablePanelPlugin } from '../plugins';
+import { nodeFormPanelFactory } from '../components/sidebar';
 import { SelectorBoxPopover } from '../components/selector-box-popover';
 import NodeAdder from '../components/node-adder';
 import BranchAdder from '../components/branch-adder';
@@ -288,6 +290,9 @@ export function useEditorProps(
          * 变量面板插件
          */
         createVariablePanelPlugin({}),
+        createPanelManagerPlugin({
+          factories: [nodeFormPanelFactory],
+        }),
       ],
     }),
     []

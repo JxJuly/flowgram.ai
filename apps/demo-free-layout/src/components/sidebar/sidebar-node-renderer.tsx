@@ -16,8 +16,8 @@ export function SidebarNodeRenderer(props: { node: FlowNodeEntity }) {
       <div
         style={{
           background: 'rgb(251, 251, 251)',
-          height: 'calc(100vh - 40px)',
-          margin: '8px 8px 8px 0',
+          height: '100%',
+          width: '500px',
           borderRadius: 8,
           border: '1px solid rgba(82,100,154, 0.13)',
         }}

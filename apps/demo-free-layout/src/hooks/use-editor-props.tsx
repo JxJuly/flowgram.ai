@@ -7,6 +7,7 @@
 import { useMemo } from 'react';
 
 import { debounce } from 'lodash-es';
+import { createPanelManagerPlugin } from '@flowgram.ai/panel-manager-plugin';
 import { createMinimapPlugin } from '@flowgram.ai/minimap-plugin';
 import { createFreeSnapPlugin } from '@flowgram.ai/free-snap-plugin';
 import { createFreeNodePanelPlugin } from '@flowgram.ai/free-node-panel-plugin';
@@ -33,6 +34,8 @@ import {
 } from '../plugins';
 import { defaultFormMeta } from '../nodes/default-form-meta';
 import { WorkflowNodeType } from '../nodes';
+import { testRunPanelFactory } from '../components/testrun/testrun-panel';
+import { nodeFormPanelFactory } from '../components/sidebar';
 import { SelectorBoxPopover } from '../components/selector-box-popover';
 import { BaseNode, CommentRender, GroupNodeRender, LineAddButton, NodePanel } from '../components';
 
@@ -378,6 +381,10 @@ export function useEditorProps(
          */
         createVariablePanelPlugin({
           initialData: initialData.globalVariable,
+        }),
+        /** Float layout plugin */
+        createPanelManagerPlugin({
+          factories: [nodeFormPanelFactory, testRunPanelFactory],
         }),
       ],
     }),

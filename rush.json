@@ -860,6 +860,11 @@
             ]
         },
         {
+            "packageName": "@flowgram.ai/panel-manager-plugin",
+            "projectFolder": "packages/plugins/panel-manager-plugin",
+            "versionPolicyName": "publishPolicy"
+        },
+        {
             "packageName": "@flowgram.ai/form-antd-materials",
             "projectFolder": "packages/materials/form-antd-materials",
             "versionPolicyName": "publishPolicy",
