@@ -10,6 +10,7 @@ export const panelLayer: React.CSSProperties = {
   left: 0,
 
   display: 'flex',
+  columnGap: '4px',
   width: '100%',
   height: '100%',
   padding: '4px',
@@ -21,6 +22,10 @@ export const leftArea: React.CSSProperties = {
   minWidth: 0,
   flexGrow: 0,
   flexShrink: 1,
+
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '4px',
 };
 
 export const rightArea: React.CSSProperties = {
@@ -36,14 +41,17 @@ export const rightArea: React.CSSProperties = {
 export const mainArea: React.CSSProperties = {
   position: 'relative',
   overflow: 'hidden',
-  flex: '0 1 0',
+  flexGrow: 0,
+  flexShrink: 1,
   width: '100%',
   height: '100%',
 };
 
 export const bottomArea: React.CSSProperties = {
-  flex: '1 0 0',
+  flexGrow: 1,
+  flexShrink: 0,
   width: '100%',
+  minHeight: 0,
 };
 
 export const floatPanelWrap: React.CSSProperties = {

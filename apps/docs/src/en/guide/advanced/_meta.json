@@ -23,7 +23,12 @@
   "history",
   "shortcuts",
   "minimap",
-  "custom-plugin",
+  {
+    "type": "dir",
+    "name": "plugin",
+    "label": "Plugin",
+    "collapsed": true
+  },
   "custom-service",
   "custom-layer",
   "form-materials",
