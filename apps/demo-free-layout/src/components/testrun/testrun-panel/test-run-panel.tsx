@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 
 import classnames from 'classnames';
 import { WorkflowInputs, WorkflowOutputs } from '@flowgram.ai/runtime-interface';
@@ -112,6 +112,26 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
     >
       {isRunning ? 'Cancel' : 'Test Run'}
     </Button>
+  );
+
+  useEffect(() => {
+    const disposer = runtimeService.onResultChanged(({ result, errors }) => {
+      setRunning(false);
+      setResult(result);
+      if (errors) {
+        setErrors(errors);
+      } else {
+        setErrors(undefined);
+      }
+    });
+    return () => disposer.dispose();
+  }, []);
+
+  useEffect(
+    () => () => {
+      runtimeService.taskCancel();
+    },
+    [runtimeService]
   );
 
   return (
