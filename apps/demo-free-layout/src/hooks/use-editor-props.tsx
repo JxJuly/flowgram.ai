@@ -32,6 +32,7 @@ import {
   createRuntimePlugin,
   createContextMenuPlugin,
   createVariablePanelPlugin,
+  createTestRunPlugin,
 } from '../plugins';
 import { defaultFormMeta } from '../nodes/default-form-meta';
 import { WorkflowNodeType } from '../nodes';
@@ -388,6 +389,8 @@ export function useEditorProps(
         createPanelManagerPlugin({
           factories: [nodeFormPanelFactory, testRunPanelFactory, problemPanelFactory],
         }),
+        /** Test run plugin */
+        createTestRunPlugin(),
       ],
     }),
     []

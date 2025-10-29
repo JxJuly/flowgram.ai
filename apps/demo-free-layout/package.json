@@ -45,6 +45,7 @@
     "@flowgram.ai/free-group-plugin": "workspace:*",
     "@flowgram.ai/form-materials": "workspace:*",
     "@flowgram.ai/panel-manager-plugin": "workspace:*",
+    "@flowgram.ai/test-run-plugin": "workspace:*",
     "@flowgram.ai/free-stack-plugin": "workspace:*",
     "@flowgram.ai/runtime-js": "workspace:*",
     "lodash-es": "^4.17.21",

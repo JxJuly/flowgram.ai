@@ -292,6 +292,9 @@ importers:
       '@flowgram.ai/runtime-js':
         specifier: workspace:*
         version: link:../../packages/runtime/js-core
+      '@flowgram.ai/test-run-plugin':
+        specifier: workspace:*
+        version: link:../../packages/plugins/test-run-plugin
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
@@ -4020,6 +4023,46 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@20.19.20)(jiti@2.5.1)(jsdom@26.1.0)(less@4.4.1)(lightningcss@1.30.1)(sass-embedded@1.93.2)(sass@1.93.2)(terser@5.44.0)(tsx@4.19.4)(yaml@2.8.1)
+
+  ../../packages/plugins/test-run-plugin:
+    dependencies:
+      '@flowgram.ai/core':
+        specifier: workspace:*
+        version: link:../../canvas-engine/core
+      '@flowgram.ai/document':
+        specifier: workspace:*
+        version: link:../../canvas-engine/document
+      '@flowgram.ai/form':
+        specifier: workspace:*
+        version: link:../../node-engine/form
+      '@flowgram.ai/form-core':
+        specifier: workspace:*
+        version: link:../../node-engine/form-core
+      '@flowgram.ai/reactive':
+        specifier: workspace:*
+        version: link:../../common/reactive
+      inversify:
+        specifier: ^6.0.1
+        version: 6.2.2(reflect-metadata@0.2.2)
+    devDependencies:
+      '@flowgram.ai/eslint-config':
+        specifier: workspace:*
+        version: link:../../../config/eslint-config
+      '@flowgram.ai/ts-config':
+        specifier: workspace:*
+        version: link:../../../config/ts-config
+      '@types/react':
+        specifier: ^18
+        version: 18.3.24
+      react:
+        specifier: ^18
+        version: 18.3.1
+      tsup:
+        specifier: ^8.0.1
+        version: 8.5.0(jiti@2.5.1)(postcss@8.5.6)(tsx@4.19.4)(typescript@5.9.2)(yaml@2.8.1)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.2
 
   ../../packages/plugins/variable-plugin:
     dependencies:

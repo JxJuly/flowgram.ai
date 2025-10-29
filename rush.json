@@ -527,6 +527,11 @@
             ]
         },
         {
+            "packageName": "@flowgram.ai/test-run-plugin",
+            "projectFolder": "packages/plugins/test-run-plugin",
+            "versionPolicyName": "publishPolicy"
+        },
+        {
             "packageName": "@flowgram.ai/fixed-layout-core",
             "projectFolder": "packages/canvas-engine/fixed-layout-core",
             "versionPolicyName": "publishPolicy",

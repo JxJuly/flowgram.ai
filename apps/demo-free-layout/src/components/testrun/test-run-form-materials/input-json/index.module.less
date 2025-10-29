@@ -1,0 +1,47 @@
+/**
+ * Copyright (c) 2025 Bytedance Ltd. and/or its affiliates
+ * SPDX-License-Identifier: MIT
+ */
+
+.input-json {
+  min-height: 100px;
+  max-height: 200px;
+  background: #fff;
+  padding: 8px 8px 8px 4px;
+  border-radius: 8px;
+  border: 1px solid #7f92cd40;
+
+  &.error {
+    border-color: red;
+  }
+
+  :global(.cm-editor) {
+    height: 100% !important;
+    overflow: auto !important;
+  }
+
+  :global(.cm-scroller) {
+    min-height: 100px !important;
+    max-height: 200px !important;
+  }
+
+  :global(.cm-content) {
+    min-height: 100px !important;
+    max-height: 200px !important;
+  }
+
+  :global(.cm-activeLine) {
+    background-color: #efefef78;
+  }
+
+  :global(.cm-activeLineGutter) {
+    background-color: #efefef78;
+  }
+
+  :global(.cm-gutters) {
+    background-color: #fff;
+    color: #000A298A;
+    border-right-color: transparent;
+    border-right-width: 0px;
+  }
+}

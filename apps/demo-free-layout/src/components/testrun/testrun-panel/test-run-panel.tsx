@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, useMemo } from 'react';
 
 import classnames from 'classnames';
+import { useForm } from '@flowgram.ai/test-run-plugin';
 import { WorkflowInputs, WorkflowOutputs } from '@flowgram.ai/runtime-interface';
 import { type PanelFactory, usePanelManager } from '@flowgram.ai/panel-manager-plugin';
-import { useService } from '@flowgram.ai/free-layout-editor';
+import { useService, WorkflowDocument } from '@flowgram.ai/free-layout-editor';
 import { Button, Switch } from '@douyinfe/semi-ui';
 import { IconClose, IconPlay, IconSpin } from '@douyinfe/semi-icons';
 
@@ -16,6 +17,7 @@ import { TestRunJsonInput } from '../testrun-json-input';
 import { TestRunForm } from '../testrun-form';
 import { NodeStatusGroup } from '../node-status-bar/group';
 import { WorkflowRuntimeService } from '../../../plugins/runtime-plugin/runtime-service';
+import { WorkflowNodeType } from '../../../nodes';
 import { IconCancel } from '../../../assets/icon-cancel';
 
 import styles from './index.module.less';
@@ -24,7 +26,12 @@ interface TestRunSidePanelProps {}
 
 export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
   const runtimeService = useService(WorkflowRuntimeService);
+  const document = useService(WorkflowDocument);
 
+  const startNode = useMemo(
+    () => document.root.blocks.find((node) => node.flowNodeType === WorkflowNodeType.Start),
+    [document]
+  );
   const panelManager = usePanelManager();
   const [isRunning, setRunning] = useState(false);
   const [values, setValues] = useState<Record<string, unknown>>({});
@@ -36,6 +43,8 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
       }
     | undefined
   >();
+
+  const { renderer } = useForm({ node: startNode });
 
   // en - Use localStorage to persist the JSON mode state
   const [inputJSONMode, _setInputJSONMode] = useState(() => {
@@ -148,6 +157,7 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
         />
       </div>
       <div className={styles['testrun-panel-content']}>
+        {renderer}
         {isRunning ? renderRunning : renderForm}
       </div>
       <div className={styles['testrun-panel-footer']}>{renderButton}</div>
