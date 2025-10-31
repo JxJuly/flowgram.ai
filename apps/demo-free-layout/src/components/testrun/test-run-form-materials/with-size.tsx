@@ -6,7 +6,7 @@
 import { connect } from '@flowgram.ai/test-run-plugin';
 
 export const withSize = (Comp: any) =>
-  connect(Comp, ({ errors, warnings, ...props }) => ({
+  connect(Comp, (props) => ({
     ...props,
     size: 'small',
     style: { ...props.style, width: '100%' },

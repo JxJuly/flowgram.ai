@@ -11,6 +11,9 @@ import type { FormSchema, FormSchemaValidate, FormComponentProps } from './types
 export const getUniqueFieldName = (...args: (string | undefined)[]) =>
   args.filter((path) => path).join('.');
 
+export const mergeFieldPath = (path?: string[], name?: string) =>
+  [...(path || []), name].filter((i): i is string => Boolean(i));
+
 /** Create validation rules */
 export const createValidate = (schema: FormSchema) => {
   const rules: Record<string, FormSchemaValidate> = {};
@@ -37,8 +40,25 @@ export const connect = <T = any>(
 ) => {
   const Connected = (props: FormComponentProps) => {
     const mappedProps = mapProps(props);
-    return createElement(Component, mappedProps);
+    return createElement(Component, mappedProps, (mappedProps as any).children);
   };
 
   return Connected;
+};
+
+export const isFormEmpty = (schema: FormSchema) => {
+  /** is not general field and not has children */
+  const isEmpty = (s: FormSchema): boolean => {
+    if (!s.type || s.type === 'object' || !s.name) {
+      return Object.entries(schema.properties || {})
+        .map(([key, value]) => ({
+          name: key,
+          ...value,
+        }))
+        .every(isFormEmpty);
+    }
+    return false;
+  };
+
+  return isEmpty(schema);
 };

@@ -14,7 +14,7 @@ interface RecursionFieldProps {
 }
 
 export const RecursionField: React.FC<RecursionFieldProps> = ({ model }) => {
-  const properties = useMemo(() => FormSchemaModel.getProperties(model), [model]);
+  const properties = useMemo(() => model.getPropertyList(), [model]);
 
   /** general field has no children */
   if (model.type !== 'object') {

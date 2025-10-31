@@ -4,4 +4,4 @@
  */
 
 export { TestRunService } from './test-run';
-export { TestRunFormService } from './test-run-form';
+export { TestRunFormEntity } from './test-run-form';

@@ -5,13 +5,15 @@
 
 import { ReactiveState } from '@flowgram.ai/reactive';
 
-import { getUniqueFieldName } from '../utils';
+import { getUniqueFieldName, mergeFieldPath } from '../utils';
 import { FormSchema, FormSchemaType, FormSchemaModelState } from '../types';
 
 export class FormSchemaModel implements FormSchema {
   name?: string;
 
   type?: FormSchemaType;
+
+  defaultValue?: any;
 
   properties?: Record<string, FormSchema>;
 
@@ -62,20 +64,20 @@ export class FormSchemaModel implements FormSchema {
     });
   }
 
-  static getFieldPath(...args: (string | undefined)[]) {
-    return args.filter((path) => path).join('.');
-  }
-
-  static mergeFieldPath(path?: string[], name?: string) {
-    return [...(path || []), name].filter((i): i is string => Boolean(i));
-  }
-
-  static getProperties(schema: FormSchemaModel | FormSchema) {
+  getPropertyList() {
     const orderProperties: FormSchemaModel[] = [];
     const unOrderProperties: FormSchemaModel[] = [];
-    Object.entries(schema.properties || {}).forEach(([key, item]) => {
+    Object.entries(this.properties || {}).forEach(([key, item]) => {
       const index = item['x-index'];
-      const current = new FormSchemaModel(item, FormSchemaModel.mergeFieldPath(schema.path, key));
+      const defaultValues = this.defaultValue;
+      /**
+       * The upper layer's default value has a higher priority than its own default value,
+       * because the upper layer's default value ultimately comes from the outside world.
+       */
+      if (typeof defaultValues === 'object' && defaultValues !== null && key in defaultValues) {
+        item.defaultValue = defaultValues[key];
+      }
+      const current = new FormSchemaModel(item, mergeFieldPath(this.path, key));
       if (index !== undefined && !isNaN(index)) {
         orderProperties[index] = current;
       } else {

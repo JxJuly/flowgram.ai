@@ -13,7 +13,6 @@ export const withStatus = (Comp: any) =>
     } else if (warnings?.length) {
       validateStatus = 'warning';
     }
-
     return {
       ...props,
       validateStatus,

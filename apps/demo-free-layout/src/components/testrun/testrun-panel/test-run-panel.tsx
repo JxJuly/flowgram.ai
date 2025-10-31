@@ -3,18 +3,18 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { FC, useState, useEffect, useMemo } from 'react';
+import { FC, useState, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
-import { useForm } from '@flowgram.ai/test-run-plugin';
+import type { FormInstance } from '@flowgram.ai/test-run-plugin';
 import { WorkflowInputs, WorkflowOutputs } from '@flowgram.ai/runtime-interface';
 import { type PanelFactory, usePanelManager } from '@flowgram.ai/panel-manager-plugin';
 import { useService, WorkflowDocument } from '@flowgram.ai/free-layout-editor';
-import { Button, Switch } from '@douyinfe/semi-ui';
+import { Button, Switch, Toast } from '@douyinfe/semi-ui';
 import { IconClose, IconPlay, IconSpin } from '@douyinfe/semi-icons';
 
 import { TestRunJsonInput } from '../testrun-json-input';
-import { TestRunForm } from '../testrun-form';
+import { TestRunFieldForm } from '../test-run-field-form';
 import { NodeStatusGroup } from '../node-status-bar/group';
 import { WorkflowRuntimeService } from '../../../plugins/runtime-plugin/runtime-service';
 import { WorkflowNodeType } from '../../../nodes';
@@ -44,7 +44,7 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
     | undefined
   >();
 
-  const { renderer } = useForm({ node: startNode });
+  const formRef = useRef<FormInstance | null>(null);
 
   // en - Use localStorage to persist the JSON mode state
   const [inputJSONMode, _setInputJSONMode] = useState(() => {
@@ -62,6 +62,13 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
       await runtimeService.taskCancel();
       return;
     }
+    if (!inputJSONMode && formRef.current) {
+      const error = await formRef.current.form.validate();
+      if (error.length) {
+        Toast.info('Form has errors');
+        return;
+      }
+    }
     setResult(undefined);
     setErrors(undefined);
     const taskID = await runtimeService.taskRun(values);
@@ -76,52 +83,6 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
     setRunning(false);
     panelManager.close(testRunPanelFactory.key);
   };
-
-  const renderRunning = (
-    <div className={styles['testrun-panel-running']}>
-      <IconSpin spin size="large" />
-      <div className={styles.text}>Running...</div>
-    </div>
-  );
-
-  const renderForm = (
-    <div className={styles['testrun-panel-form']}>
-      <div className={styles['testrun-panel-input']}>
-        <div className={styles.title}>Input Form</div>
-        <div>JSON Mode</div>
-        <Switch
-          checked={inputJSONMode}
-          onChange={(checked: boolean) => setInputJSONMode(checked)}
-          size="small"
-        />
-      </div>
-      {inputJSONMode ? (
-        <TestRunJsonInput values={values} setValues={setValues} />
-      ) : (
-        <TestRunForm values={values} setValues={setValues} />
-      )}
-      {errors?.map((e) => (
-        <div className={styles.error} key={e}>
-          {e}
-        </div>
-      ))}
-      <NodeStatusGroup title="Inputs Result" data={result?.inputs} optional disableCollapse />
-      <NodeStatusGroup title="Outputs Result" data={result?.outputs} optional disableCollapse />
-    </div>
-  );
-
-  const renderButton = (
-    <Button
-      onClick={onTestRun}
-      icon={isRunning ? <IconCancel /> : <IconPlay size="small" />}
-      className={classnames(styles.button, {
-        [styles.running]: isRunning,
-        [styles.default]: !isRunning,
-      })}
-    >
-      {isRunning ? 'Cancel' : 'Test Run'}
-    </Button>
-  );
 
   useEffect(() => {
     const disposer = runtimeService.onResultChanged(({ result, errors }) => {
@@ -143,6 +104,10 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
     [runtimeService]
   );
 
+  if (!startNode) {
+    return null;
+  }
+
   return (
     <div className={styles['testrun-panel-container']}>
       <div className={styles['testrun-panel-header']}>
@@ -157,10 +122,56 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
         />
       </div>
       <div className={styles['testrun-panel-content']}>
-        {renderer}
-        {isRunning ? renderRunning : renderForm}
+        {isRunning && (
+          <div className={styles['testrun-panel-running']}>
+            <IconSpin spin size="large" />
+            <div className={styles.text}>Running...</div>
+          </div>
+        )}
+        <div className={styles['testrun-panel-form']}>
+          <div className={styles['testrun-panel-input']}>
+            <div className={styles.title}>Input Form</div>
+            <div>JSON Mode</div>
+            <Switch
+              checked={inputJSONMode}
+              onChange={(checked: boolean) => setInputJSONMode(checked)}
+              size="small"
+            />
+          </div>
+          {inputJSONMode ? (
+            <TestRunJsonInput values={values} setValues={setValues} />
+          ) : (
+            <TestRunFieldForm
+              node={startNode}
+              defaultValues={values}
+              onFormValuesChange={setValues}
+              onMounted={(form) => {
+                formRef.current = form;
+                setValues(form.form.values);
+              }}
+            />
+          )}
+          {errors?.map((e) => (
+            <div className={styles.error} key={e}>
+              {e}
+            </div>
+          ))}
+          <NodeStatusGroup title="Inputs Result" data={result?.inputs} optional disableCollapse />
+          <NodeStatusGroup title="Outputs Result" data={result?.outputs} optional disableCollapse />
+        </div>
       </div>
-      <div className={styles['testrun-panel-footer']}>{renderButton}</div>
+      <div className={styles['testrun-panel-footer']}>
+        <Button
+          onClick={onTestRun}
+          icon={isRunning ? <IconCancel /> : <IconPlay size="small" />}
+          className={classnames(styles.button, {
+            [styles.running]: isRunning,
+            [styles.default]: !isRunning,
+          })}
+        >
+          {isRunning ? 'Cancel' : 'Test Run'}
+        </Button>
+      </div>
     </div>
   );
 };

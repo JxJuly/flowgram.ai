@@ -6,12 +6,11 @@
 import { definePluginCreator } from '@flowgram.ai/core';
 
 import { TestRunPluginConfig } from './types';
-import { TestRunService, TestRunFormService } from './services';
+import { TestRunService } from './services';
 
 export const createTestRunPlugin = definePluginCreator<TestRunPluginConfig>({
   onBind: ({ bind }) => {
     bind(TestRunService).toSelf().inSingletonScope();
-    bind(TestRunFormService).toSelf().inSingletonScope();
   },
   onInit(ctx, opts) {
     const testRun = ctx.container.get<TestRunService>(TestRunService);

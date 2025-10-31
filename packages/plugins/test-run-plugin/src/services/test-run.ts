@@ -3,20 +3,22 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { injectable, inject } from 'inversify';
+import { injectable } from 'inversify';
 import type { FlowNodeEntity, FlowNodeType } from '@flowgram.ai/document';
 
-import { TestRunFormService } from './test-run-form';
+import { TestRunFormEntity } from './test-run-form';
 import { NodeTestConfig, TestRunPluginConfig, NodeMap } from '../types';
 import { FormSchema } from '../form-engine';
 
 @injectable()
 export class TestRunService {
-  @inject(TestRunFormService) private readonly form: TestRunFormService;
-
   private initialized = false;
 
   private nodes: NodeMap = {};
+
+  private components = {};
+
+  formEntities = new Map<string, TestRunFormEntity>();
 
   init(config: TestRunPluginConfig) {
     if (this.initialized) {
@@ -25,11 +27,16 @@ export class TestRunService {
     this.initialized = true;
     const { nodes = {}, components = {} } = config;
     this.nodes = nodes;
-    this.form.init(components);
+    this.components = components;
   }
 
   nodeRegister(nodeType: string, nodeTestConfig: NodeTestConfig) {
     this.nodes[nodeType] = nodeTestConfig;
+  }
+
+  isEnabled(nodeType: FlowNodeType) {
+    const config = this.nodes[nodeType];
+    return config && config?.enabled !== false;
   }
 
   async toSchema(node: FlowNodeEntity) {
@@ -49,12 +56,21 @@ export class TestRunService {
     };
   }
 
-  isEnabled(nodeType: FlowNodeType) {
-    const config = this.nodes[nodeType];
-    return config && config?.enabled !== false;
+  createFormWithSchema(schema: FormSchema) {
+    const form = new TestRunFormEntity({
+      schema,
+      components: this.components,
+    });
+    this.formEntities.set(form.id, form);
+    form.onFormUnmounted(() => {
+      form.dispose();
+      this.formEntities.delete(form.id);
+    });
+    return form;
   }
 
-  formRender(schema: FormSchema) {
-    return this.form.render(schema);
+  async createForm(node: FlowNodeEntity) {
+    const schema = await this.toSchema(node);
+    return this.createFormWithSchema(schema);
   }
 }

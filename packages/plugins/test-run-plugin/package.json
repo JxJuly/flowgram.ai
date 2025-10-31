@@ -24,8 +24,10 @@
   },
   "dependencies": {
     "inversify": "^6.0.1",
+    "nanoid": "^5.0.9",
     "@flowgram.ai/form-core": "workspace:*",
     "@flowgram.ai/core": "workspace:*",
+    "@flowgram.ai/utils": "workspace:*",
     "@flowgram.ai/document": "workspace:*",
     "@flowgram.ai/form": "workspace:*",
     "@flowgram.ai/reactive": "workspace:*"

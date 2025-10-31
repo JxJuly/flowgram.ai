@@ -4,6 +4,13 @@
  */
 
 export { createTestRunPlugin } from './create-test-run-plugin';
-export { useForm } from './reactive';
+export { useCreateForm } from './reactive';
 
-export { connect, type FormSchema, type FormComponentProps } from './form-engine';
+export {
+  FormEngine,
+  connect,
+  type FormInstance,
+  type FormEngineProps,
+  type FormSchema,
+  type FormComponentProps,
+} from './form-engine';

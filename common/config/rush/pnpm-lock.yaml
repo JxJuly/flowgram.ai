@@ -4041,9 +4041,15 @@ importers:
       '@flowgram.ai/reactive':
         specifier: workspace:*
         version: link:../../common/reactive
+      '@flowgram.ai/utils':
+        specifier: workspace:*
+        version: link:../../common/utils
       inversify:
         specifier: ^6.0.1
         version: 6.2.2(reflect-metadata@0.2.2)
+      nanoid:
+        specifier: ^5.0.9
+        version: 5.1.5
     devDependencies:
       '@flowgram.ai/eslint-config':
         specifier: workspace:*

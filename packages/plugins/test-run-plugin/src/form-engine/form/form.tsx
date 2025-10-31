@@ -11,14 +11,16 @@ import { createSchemaField } from '../fields';
 
 const SchemaField = createSchemaField({});
 
-export type FormEngineProps = {
-  /** Form schema */
-  schema: FormSchema;
-  /** form material map */
-  components?: FormComponents;
-} & UseCreateFormOptions;
+export type FormEngineProps = React.PropsWithChildren<
+  {
+    /** Form schema */
+    schema: FormSchema;
+    /** form material map */
+    components?: FormComponents;
+  } & UseCreateFormOptions
+>;
 
-export const FormEngine: React.FC<React.PropsWithChildren<FormEngineProps>> = ({
+export const FormEngine: React.FC<FormEngineProps> = ({
   schema,
   components,
   children,

@@ -12,10 +12,15 @@ import { createValidate } from '../utils';
 import { FormSchema, FormSchemaValidate } from '../types';
 import { FormSchemaModel } from '../model';
 
+export interface FormInstance {
+  model: FormSchemaModel;
+  form: IForm;
+}
 export interface UseCreateFormOptions {
+  defaultValues?: any;
   validate?: Record<string, FormSchemaValidate>;
   validateTrigger?: ValidateTrigger;
-  onMounted?: (data: { model: FormSchemaModel; form: IForm }) => void;
+  onMounted?: (form: FormInstance) => void;
   onFormValuesChange?: (payload: OnFormValuesChangePayload) => void;
   onUnmounted?: () => void;
 }
@@ -33,7 +38,10 @@ export const useCreateForm = (schema: FormSchema, options: UseCreateFormOptions 
     [schema]
   );
 
-  const model = useMemo(() => new FormSchemaModel({ type: 'object', ...schema }), [schema]);
+  const model = useMemo(
+    () => new FormSchemaModel({ type: 'object', ...schema, defaultValue: options.defaultValues }),
+    [schema]
+  );
 
   /** Lifecycle and event binding */
   useEffect(() => {

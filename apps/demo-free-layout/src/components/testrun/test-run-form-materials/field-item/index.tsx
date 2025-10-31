@@ -24,26 +24,38 @@ export const FieldItem: React.FC<React.PropsWithChildren<FieldItemProps>> = ({
   type,
   itemsType,
   children,
-}) => (
-  <div className={css['field-item']}>
-    <label className={css['field-label']}>
-      <Typography.Text size="small" strong>
-        {label}
-      </Typography.Text>
-      {required && (
-        <Typography.Text size="small" type="danger">
-          *
+  errors,
+}) => {
+  const feedback = errors?.map((i) => i.message).join(', ');
+
+  return (
+    <div className={css['field-item']}>
+      <label className={css['field-label']}>
+        <Typography.Text size="small" strong>
+          {label}
         </Typography.Text>
+        {required && (
+          <Typography.Text size="small" type="danger">
+            *
+          </Typography.Text>
+        )}
+        <DisplaySchemaTag value={{ type, items: itemsType ? { type: itemsType } : undefined }} />
+      </label>
+      {description && (
+        <div className={css['field-description']}>
+          <Typography.Text size="small" type="secondary">
+            {description}
+          </Typography.Text>
+        </div>
       )}
-      <DisplaySchemaTag value={{ type, items: itemsType ? { type: itemsType } : undefined }} />
-    </label>
-    {description && (
-      <div className={css['field-description']}>
-        <Typography.Text size="small" type="secondary">
-          {description}
-        </Typography.Text>
-      </div>
-    )}
-    {children}
-  </div>
-);
+      {children}
+      {feedback && (
+        <div>
+          <Typography.Text size="small" type="danger">
+            {feedback}
+          </Typography.Text>
+        </div>
+      )}
+    </div>
+  );
+};

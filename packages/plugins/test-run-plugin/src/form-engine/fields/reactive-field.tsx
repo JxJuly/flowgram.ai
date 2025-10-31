@@ -22,7 +22,6 @@ export const ReactiveField: React.FC<React.PropsWithChildren<ReactiveFieldProps>
   const components = useContext(ComponentsContext);
 
   const disabled = modelState.disabled || formState.disabled;
-
   const componentRender = () => {
     if (!model.componentType || !components[model.componentType]) {
       return props.children;

@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-export { FormEngine } from './form';
+export { FormEngine, type FormEngineProps } from './form';
+export { FormSchemaModel } from './model';
 /** utils */
-export { connect } from './utils';
+export { connect, isFormEmpty } from './utils';
 
 /** types */
 export type {
@@ -15,3 +16,4 @@ export type {
   FormComponent,
   FormComponentProps,
 } from './types';
+export type { FormInstance } from './hooks/use-create-form';
