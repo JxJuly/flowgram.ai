@@ -6,16 +6,26 @@
 import { FC, useState, useEffect, useMemo, useRef } from 'react';
 
 import classnames from 'classnames';
-import type { FormInstance } from '@flowgram.ai/test-run-plugin';
+import { type FormInstance, useTestRunService } from '@flowgram.ai/test-run-plugin';
 import { WorkflowInputs, WorkflowOutputs } from '@flowgram.ai/runtime-interface';
 import { type PanelFactory, usePanelManager } from '@flowgram.ai/panel-manager-plugin';
-import { useService, WorkflowDocument } from '@flowgram.ai/free-layout-editor';
+import {
+  useService,
+  WorkflowDocument,
+  DisposableCollection,
+} from '@flowgram.ai/free-layout-editor';
 import { Button, Switch, Toast } from '@douyinfe/semi-ui';
 import { IconClose, IconPlay, IconSpin } from '@douyinfe/semi-icons';
 
 import { TestRunJsonInput } from '../testrun-json-input';
 import { TestRunFieldForm } from '../test-run-field-form';
 import { NodeStatusGroup } from '../node-status-bar/group';
+import {
+  FormValidatePipelinePlugin,
+  DocumentValidatePipelinePlugin,
+  ExecutePipelinePlugin,
+  ProgressPipelinePlugin,
+} from '../../../plugins/test-run-plugin/flow-pipeline-plugin';
 import { WorkflowRuntimeService } from '../../../plugins/runtime-plugin/runtime-service';
 import { WorkflowNodeType } from '../../../nodes';
 import { IconCancel } from '../../../assets/icon-cancel';
@@ -27,7 +37,7 @@ interface TestRunSidePanelProps {}
 export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
   const runtimeService = useService(WorkflowRuntimeService);
   const document = useService(WorkflowDocument);
-
+  const testRunService = useTestRunService();
   const startNode = useMemo(
     () => document.root.blocks.find((node) => node.flowNodeType === WorkflowNodeType.Start),
     [document]
@@ -62,6 +72,7 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
       await runtimeService.taskCancel();
       return;
     }
+    runtimeService.reset();
     if (!inputJSONMode && formRef.current) {
       const error = await formRef.current.form.validate();
       if (error.length) {
@@ -71,9 +82,27 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
     }
     setResult(undefined);
     setErrors(undefined);
-    const taskID = await runtimeService.taskRun(values);
-    if (taskID) {
-      setRunning(true);
+
+    const pipeline = testRunService.createPipeline({
+      plugins: [
+        FormValidatePipelinePlugin,
+        DocumentValidatePipelinePlugin,
+        ExecutePipelinePlugin,
+        ProgressPipelinePlugin,
+      ],
+    });
+
+    testRunService.disconnectAllPipeline();
+    testRunService.connectPipeline(pipeline);
+    setRunning(true);
+    try {
+      await pipeline.start({
+        data: { form: formRef.current?.form, mode: inputJSONMode ? 'json' : 'form', values },
+      });
+    } catch (error) {
+      Toast.error(String(error));
+    } finally {
+      setRunning(false);
     }
   };
 
@@ -85,17 +114,17 @@ export const TestRunSidePanel: FC<TestRunSidePanelProps> = () => {
   };
 
   useEffect(() => {
-    const disposer = runtimeService.onResultChanged(({ result, errors }) => {
-      setRunning(false);
-      setResult(result);
-      if (errors) {
-        setErrors(errors);
-      } else {
-        setErrors(undefined);
-      }
-    });
-    return () => disposer.dispose();
-  }, []);
+    const disposable = new DisposableCollection(
+      testRunService.onPipelineFinished((result) => {
+        setRunning(false);
+        setResult(result);
+      }),
+      testRunService.onPipelineProgress((result) => {
+        runtimeService.updateReport(result);
+      })
+    );
+    return () => disposable.dispose();
+  }, [testRunService]);
 
   useEffect(
     () => () => {

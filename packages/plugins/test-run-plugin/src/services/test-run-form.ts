@@ -6,28 +6,27 @@
 import { createElement } from 'react';
 
 import { nanoid } from 'nanoid';
+import { injectable, inject } from 'inversify';
 import { Emitter } from '@flowgram.ai/utils';
 
-import {
-  FormSchema,
-  FormEngine,
-  FormComponents,
-  type FormInstance,
-  type FormEngineProps,
-} from '../form-engine';
+import { FormSchema, FormEngine, type FormInstance, type FormEngineProps } from '../form-engine';
+import { TestRunConfig } from './config';
 
 export type FormRenderProps = Omit<
   FormEngineProps,
   'schema' | 'components' | 'onMounted' | 'onUnmounted'
 >;
 
-interface TestRunFormEntityOptions {
+export const TestRunFormFactory = Symbol('TestRunFormFactory');
+export type TestRunFormFactory = (options: TestRunFormEntityOptions) => TestRunFormEntity;
+
+export interface TestRunFormEntityOptions {
   schema: FormSchema;
-  components: FormComponents;
 }
 
+@injectable()
 export class TestRunFormEntity {
-  private components: FormComponents = {};
+  @inject(TestRunConfig) private readonly config: TestRunConfig;
 
   private _schema: FormSchema;
 
@@ -47,10 +46,8 @@ export class TestRunFormEntity {
     return this._schema;
   }
 
-  constructor(options: TestRunFormEntityOptions) {
-    const { schema, components } = options;
-    this._schema = schema;
-    this.components = components;
+  init(options: TestRunFormEntityOptions) {
+    this._schema = options.schema;
   }
 
   render(props?: FormRenderProps) {
@@ -59,7 +56,7 @@ export class TestRunFormEntity {
       FormEngine,
       {
         schema: this.schema,
-        components: this.components,
+        components: this.config.components,
         onMounted: (instance) => {
           this.form = instance;
           this.onFormMountedEmitter.fire(instance);

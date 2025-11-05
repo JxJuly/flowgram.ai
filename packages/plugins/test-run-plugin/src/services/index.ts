@@ -4,4 +4,11 @@
  */
 
 export { TestRunService } from './test-run';
-export { TestRunFormEntity } from './test-run-form';
+export { TestRunFormEntity, TestRunFormFactory, TestRunFormEntityOptions } from './test-run-form';
+export {
+  TestRunPipelineEntity,
+  TestRunPipelineFactory,
+  type TestRunPipelinePlugin,
+  type TestRunPipelineEntityCtx,
+} from './pipeline';
+export { TestRunConfig, defineConfig } from './config';

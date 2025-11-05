@@ -4,7 +4,7 @@
  */
 
 export { createTestRunPlugin } from './create-test-run-plugin';
-export { useCreateForm } from './reactive';
+export { useCreateForm, useTestRunService } from './reactive';
 
 export {
   FormEngine,
@@ -14,3 +14,9 @@ export {
   type FormSchema,
   type FormComponentProps,
 } from './form-engine';
+
+export {
+  type TestRunPipelinePlugin,
+  TestRunPipelineEntity,
+  type TestRunPipelineEntityCtx,
+} from './services';

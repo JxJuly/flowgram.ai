@@ -5,15 +5,41 @@
 
 import { definePluginCreator } from '@flowgram.ai/core';
 
-import { TestRunPluginConfig } from './types';
-import { TestRunService } from './services';
+import {
+  TestRunService,
+  TestRunFormEntity,
+  TestRunFormFactory,
+  TestRunFormEntityOptions,
+  TestRunPipelineEntity,
+  TestRunPipelineFactory,
+  TestRunConfig,
+  defineConfig,
+} from './services';
 
-export const createTestRunPlugin = definePluginCreator<TestRunPluginConfig>({
-  onBind: ({ bind }) => {
+export const createTestRunPlugin = definePluginCreator<Partial<TestRunConfig>>({
+  onBind: ({ bind }, opt) => {
+    /** service */
     bind(TestRunService).toSelf().inSingletonScope();
-  },
-  onInit(ctx, opts) {
-    const testRun = ctx.container.get<TestRunService>(TestRunService);
-    testRun.init(opts);
+    /** config */
+    bind(TestRunConfig).toConstantValue(defineConfig(opt));
+    /** form entity */
+    bind(TestRunFormEntity).toSelf().inTransientScope();
+    bind<TestRunFormFactory>(TestRunFormFactory).toFactory<
+      TestRunFormEntity,
+      [TestRunFormEntityOptions]
+    >((context) => (options) => {
+      const e = context.container.resolve(TestRunFormEntity);
+      e.init(options);
+      return e;
+    });
+    /** pipeline entity */
+    bind(TestRunPipelineEntity).toSelf().inTransientScope();
+    bind<TestRunPipelineFactory>(TestRunPipelineFactory).toFactory<TestRunPipelineEntity>(
+      (context) => () => {
+        const e = context.container.resolve(TestRunPipelineEntity);
+        e.container = context.container.createChild();
+        return e;
+      }
+    );
   },
 });

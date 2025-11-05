@@ -3,45 +3,46 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
+import { Disposable, DisposableCollection, Emitter } from '@flowgram.ai/utils';
 import type { FlowNodeEntity, FlowNodeType } from '@flowgram.ai/document';
 
-import { TestRunFormEntity } from './test-run-form';
-import { NodeTestConfig, TestRunPluginConfig, NodeMap } from '../types';
+import { TestRunFormEntity, TestRunFormFactory } from './test-run-form';
+import { TestRunPipelineFactory } from './pipeline/factory';
 import { FormSchema } from '../form-engine';
+import { TestRunPipelineEntity, type TestRunPipelineEntityOptions } from './pipeline';
+import { TestRunConfig } from './config';
 
 @injectable()
 export class TestRunService {
-  private initialized = false;
+  @inject(TestRunConfig) private readonly config: TestRunConfig;
 
-  private nodes: NodeMap = {};
+  @inject(TestRunFormFactory) private readonly formFactory: TestRunFormFactory;
 
-  private components = {};
+  @inject(TestRunPipelineFactory) private readonly pipelineFactory: TestRunPipelineFactory;
 
   formEntities = new Map<string, TestRunFormEntity>();
 
-  init(config: TestRunPluginConfig) {
-    if (this.initialized) {
-      return;
-    }
-    this.initialized = true;
-    const { nodes = {}, components = {} } = config;
-    this.nodes = nodes;
-    this.components = components;
-  }
+  pipelineEntities = new Map<string, TestRunPipelineEntity>();
 
-  nodeRegister(nodeType: string, nodeTestConfig: NodeTestConfig) {
-    this.nodes[nodeType] = nodeTestConfig;
-  }
+  pipelineBindings = new Map<string, Disposable>();
 
-  isEnabled(nodeType: FlowNodeType) {
-    const config = this.nodes[nodeType];
+  onPipelineProgressEmitter = new Emitter();
+
+  onPipelineProgress = this.onPipelineProgressEmitter.event;
+
+  onPipelineFinishedEmitter = new Emitter();
+
+  onPipelineFinished = this.onPipelineFinishedEmitter.event;
+
+  public isEnabled(nodeType: FlowNodeType) {
+    const config = this.config.nodes[nodeType];
     return config && config?.enabled !== false;
   }
 
   async toSchema(node: FlowNodeEntity) {
     const nodeType = node.flowNodeType;
-    const config = this.nodes[nodeType];
+    const config = this.config.nodes[nodeType];
     if (!this.isEnabled(nodeType)) {
       return {};
     }
@@ -57,9 +58,8 @@ export class TestRunService {
   }
 
   createFormWithSchema(schema: FormSchema) {
-    const form = new TestRunFormEntity({
+    const form = this.formFactory({
       schema,
-      components: this.components,
     });
     this.formEntities.set(form.id, form);
     form.onFormUnmounted(() => {
@@ -72,5 +72,37 @@ export class TestRunService {
   async createForm(node: FlowNodeEntity) {
     const schema = await this.toSchema(node);
     return this.createFormWithSchema(schema);
+  }
+
+  createPipeline(options: TestRunPipelineEntityOptions) {
+    const pipeline = this.pipelineFactory();
+    this.pipelineEntities.set(pipeline.id, pipeline);
+    pipeline.init(options);
+    return pipeline;
+  }
+
+  connectPipeline(pipeline: TestRunPipelineEntity) {
+    if (this.pipelineBindings.get(pipeline.id)) {
+      return;
+    }
+    const disposable = new DisposableCollection(
+      pipeline.onProgress(this.onPipelineProgressEmitter.fire.bind(this.onPipelineProgressEmitter)),
+      pipeline.onFinished(this.onPipelineFinishedEmitter.fire.bind(this.onPipelineFinishedEmitter))
+    );
+    this.pipelineBindings.set(pipeline.id, disposable);
+  }
+
+  disconnectPipeline(id: string) {
+    if (this.pipelineBindings.has(id)) {
+      const disposable = this.pipelineBindings.get(id);
+      disposable?.dispose();
+      this.pipelineBindings.delete(id);
+    }
+  }
+
+  disconnectAllPipeline() {
+    for (const id of this.pipelineBindings.keys()) {
+      this.disconnectPipeline(id);
+    }
   }
 }

@@ -60,7 +60,7 @@ export class WorkflowRuntimeService {
     };
   }>();
 
-  private nodeRunningStatus: Map<string, NodeRunningStatus>;
+  private nodeRunningStatus: Map<string, NodeRunningStatus> = new Map();
 
   public onNodeReportChange = this.reportEmitter.event;
 
@@ -142,7 +142,7 @@ export class WorkflowRuntimeService {
     return isValid;
   }
 
-  private reset(): void {
+  reset(): void {
     this.taskID = undefined;
     this.nodeRunningStatus = new Map();
     this.runningNodes = [];
@@ -180,7 +180,7 @@ export class WorkflowRuntimeService {
     this.updateReport(report);
   }
 
-  private updateReport(report: IReport): void {
+  updateReport(report: IReport): void {
     const { reports } = report;
     this.runningNodes = [];
     this.document
