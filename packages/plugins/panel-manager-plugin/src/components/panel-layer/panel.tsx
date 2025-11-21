@@ -52,7 +52,7 @@ const PanelItem: React.FC<{ panel: PanelEntity }> = ({ panel }) => {
       )}
       key={panel.id}
       ref={ref}
-      style={{ ...panel.factory.style, ...sizeStyle }}
+      style={{ ...panel.factory.style, ...panel.config.style, ...sizeStyle }}
     >
       {resize &&
         panelManager.config.resizeBarRender({

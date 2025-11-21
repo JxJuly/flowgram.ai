@@ -7,7 +7,7 @@ import { injectable, inject } from 'inversify';
 import { Emitter } from '@flowgram.ai/utils';
 
 import { PanelManagerConfig } from './panel-config';
-import type { Area, PanelFactory } from '../types';
+import type { Area, PanelEntityConfig, PanelFactory } from '../types';
 import { PanelEntity, PanelEntityFactory } from './panel-factory';
 
 @injectable()
@@ -34,7 +34,7 @@ export class PanelManager {
   }
 
   /** open panel */
-  public open(key: string, area: Area = 'right', options?: any) {
+  public open(key: string, area: Area = 'right', options?: PanelEntityConfig) {
     const factory = this.panelRegistry.get(key);
     if (!factory) {
       return;

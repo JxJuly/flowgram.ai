@@ -22,7 +22,8 @@ export interface PanelFactory<T extends any> {
   render: (props: T) => React.ReactNode;
 }
 
-export interface PanelEntityConfig<T extends any> {
+export interface PanelEntityConfig<T extends any = any> {
   defaultSize?: number;
+  style?: React.CSSProperties;
   props?: T;
 }
